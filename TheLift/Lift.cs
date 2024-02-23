@@ -19,7 +19,7 @@ public class Lift
 
         //int currentFloor = 0;
         Direction currentDirection = Direction.Up;
-        //int currentOccupancy = 0;
+        int currentOccupancy = 0;
 
         int remainingCallers = queues.Sum(q => q.Length);
 
@@ -30,11 +30,12 @@ public class Lift
                 // Embark only, lift should be empty here as it's the end of the line.
                 if (queues[0].Any())
                 {
-                    foreach (int requestedFloor in queues[0])
+                    foreach (int requestedFloor in Enumerable.Take(queues[0], capacity))
                     {
                         callingFloors[requestedFloor]++;
                         updatedQueue.Remove(requestedFloor);
-                        remainingCallers--; 
+                        currentOccupancy++;
+                        remainingCallers--;
                     }
 
                     queues[0] = updatedQueue.ToArray();
@@ -42,14 +43,15 @@ public class Lift
             }
 
             // Determine which floor to visit next, if any
-            int? nextStop = DetermineNextStop(queues, callingFloors, currentFloor, currentDirection);
+            int? nextStop = DetermineNextStop(queues, callingFloors, currentFloor, currentDirection, currentOccupancy, capacity);
 
             if (nextStop is null)
             {
                 // Reverse direction, as we still have remaining callers so they must be going the other way
                 currentDirection = currentDirection == Direction.Up ? Direction.Down : Direction.Up;
-
-                nextStop = DetermineNextStop(queues, callingFloors, queues.Length - 1, currentDirection);
+                int floorToCheckFrom = currentDirection == Direction.Up ? 0 : queues.Length - 1;
+                
+                nextStop = DetermineNextStop(queues, callingFloors, floorToCheckFrom, currentDirection, currentOccupancy, capacity);
 
                 if (nextStop is null)
                 {
@@ -68,7 +70,8 @@ public class Lift
             // Disembark people
             if (callingFloors.ContainsKey(currentFloor) && callingFloors[currentFloor] > 0)
             {
-                // TODO: Will want to obtain the actual number of people disembarked for capacity later
+                // Reduce the lift occupancy by the number of people who have disembarked at this floor
+                currentOccupancy -= callingFloors[currentFloor];
                 callingFloors[currentFloor] = 0;
             }
 
@@ -83,17 +86,19 @@ public class Lift
 
                 foreach (int requestedFloor in queues[currentFloor])
                 {
-                    if (currentDirection == Direction.Up && requestedFloor > currentFloor)
+                    if (currentDirection == Direction.Up && requestedFloor > currentFloor && currentOccupancy < capacity)
                     {
                         callingFloors[requestedFloor]++;
                         updatedQueue.Remove(requestedFloor);
+                        currentOccupancy++;
                         remainingCallers--;
                     }
 
-                    if (currentDirection == Direction.Down && requestedFloor < currentFloor)
+                    if (currentDirection == Direction.Down && requestedFloor < currentFloor && currentOccupancy < capacity)
                     {
                         callingFloors[requestedFloor]++;
                         updatedQueue.Remove(requestedFloor);
+                        currentOccupancy++;
                         remainingCallers--;
                     }
                 }
@@ -142,7 +147,13 @@ public class Lift
         return floorsVisited.ToArray();
     }
 
-    private static int? DetermineNextStop(int[][] queues, Dictionary<int, int> callingFloors, int currentFloor, Direction direction)
+    private static int? DetermineNextStop(
+        int[][] queues,
+        Dictionary<int, int> callingFloors,
+        int currentFloor,
+        Direction direction,
+        int currentOccupancy,
+        int capacity)
     {
         int? nextStop = null;
 
@@ -157,7 +168,7 @@ public class Lift
                 }
 
                 // Stop on a floor for callers where the caller is headed in the same direction as the lift
-                if (queues[potentialNextStop].Any(floor => floor > potentialNextStop))
+                if (queues[potentialNextStop].Any(floor => floor > potentialNextStop) && currentOccupancy < capacity)
                 {
                     return potentialNextStop;
                 }
@@ -165,7 +176,7 @@ public class Lift
         }
         else
         {
-            for (int potentialNextStop = currentFloor; potentialNextStop > 0; potentialNextStop--)
+            for (int potentialNextStop = currentFloor; potentialNextStop >= 0; potentialNextStop--)
             {
                 // Stop on a floor for any existing riders who have already requested that floor
                 if (callingFloors[potentialNextStop] > 0)
@@ -174,7 +185,7 @@ public class Lift
                 }
 
                 // Stop on a floor for callers where the caller is headed in the same direction as the lift
-                if (queues[potentialNextStop].Any(floor => floor < potentialNextStop))
+                if (queues[potentialNextStop].Any(floor => floor < potentialNextStop) && currentOccupancy < capacity)
                 {
                     return potentialNextStop;
                 }
