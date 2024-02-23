@@ -1,1 +1,5 @@
-.vs/*
+.idea/
+.vs/
+bin/
+debug/
+obj/
