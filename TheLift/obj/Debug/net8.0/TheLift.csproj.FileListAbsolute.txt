@@ -1,0 +1,11 @@
+C:\projects\katas\TheLift\TheLift\bin\Debug\net8.0\TheLift.deps.json
+C:\projects\katas\TheLift\TheLift\bin\Debug\net8.0\TheLift.dll
+C:\projects\katas\TheLift\TheLift\bin\Debug\net8.0\TheLift.pdb
+C:\projects\katas\TheLift\TheLift\obj\Debug\net8.0\TheLift.GeneratedMSBuildEditorConfig.editorconfig
+C:\projects\katas\TheLift\TheLift\obj\Debug\net8.0\TheLift.AssemblyInfoInputs.cache
+C:\projects\katas\TheLift\TheLift\obj\Debug\net8.0\TheLift.AssemblyInfo.cs
+C:\projects\katas\TheLift\TheLift\obj\Debug\net8.0\TheLift.csproj.CoreCompileInputs.cache
+C:\projects\katas\TheLift\TheLift\obj\Debug\net8.0\TheLift.dll
+C:\projects\katas\TheLift\TheLift\obj\Debug\net8.0\refint\TheLift.dll
+C:\projects\katas\TheLift\TheLift\obj\Debug\net8.0\TheLift.pdb
+C:\projects\katas\TheLift\TheLift\obj\Debug\net8.0\ref\TheLift.dll
