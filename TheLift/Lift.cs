@@ -40,6 +40,8 @@ public class Lift
 
                     queues[0] = updatedQueue.ToArray();
                 }
+
+                currentDirection = Direction.Up;
             }
 
             // Determine which floor to visit next, if any

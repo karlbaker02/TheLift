@@ -103,6 +103,25 @@ public class LiftTest
     }
 
     [TestMethod]
+    public void Run_CollectsPeopleGoingInOppositeDirection_WhenNoOneElseToCollectFromAHigherFloor()
+    {
+        int[][] queues =
+        {
+            [], // G
+            [], // 1
+            [], // 2
+            [1], // 3
+            [], // 4
+            [], // 5
+            [], // 6
+        };
+
+        int[] floorsVisited = Lift.Run(queues, DefaultCapacity);
+
+        floorsVisited.Should().BeEquivalentTo(new[] { 0, 3, 1, 0 });
+    }
+
+    [TestMethod]
     public void Run_ReturnsToCollectFromPassedFloor_WhenLiftWasOriginallyFull()
     {
         int[][] queues =
